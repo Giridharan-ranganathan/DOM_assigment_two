@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Table with Pagination</title>
+<style>
+</style>
+</head>
+<body>
+  <div id="table-container">
+    <table id="data-table">
+     
+      <thead>
+        <tr>
+       
+        </tr>
+      </thead>
+      <tbody>
+       
+      </tbody>
+    </table>
+  </div>
+  <div id="pagination-container">
+    
+  </div>
+
+  <script>
+    fetch('https://raw.githubusercontent.com/Rajavasanthan/jsondata/master/pagenation.json')
+      .then(response => response.json())
+      .then(data => {
+        generateTable(data, 0, 10);
+        generatePagination(data);
+      })
+      .catch(error => console.error('Error fetching data:', error));
+
+    function generateTable(data, start, end) {
+      const tableHeaders = Object.keys(data[0]);
+      const tableHeadRow = document.querySelector('#data-table thead tr');
+      const tableBody = document.querySelector('#data-table tbody');
+
+      // Clear existing table content
+      tableHeadRow.innerHTML = '';
+      tableBody.innerHTML = '';
+
+      // Generate table headers
+      tableHeaders.forEach(header => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        tableHeadRow.appendChild(th);
+      });
+
+      // Generate table rows for the specified range
+      for (let i = start; i < end; i++) {
+        const tr = document.createElement('tr');
+        tableHeaders.forEach(header => {
+          const td = document.createElement('td');
+          td.textContent = data[i][header];
+          tr.appendChild(td);
+        });
+        tableBody.appendChild(tr);
+      }
+    }
+
+    function generatePagination(data) {
+      // Function to generate pagination buttons
+      const totalPages = Math.ceil(data.length / 10); // Assuming 10 items per page
+      const paginationContainer = document.querySelector('#pagination-container');
+
+      for (let i = 1; i <= totalPages; i++) {
+        const button = document.createElement('button');
+        button.textContent = i;
+        button.addEventListener('click', () => {
+          // Logic to show the corresponding page
+          const start = (i - 1) * 10;
+          const end = start + 10;
+          generateTable(data, start, end);
+        });
+        paginationContainer.appendChild(button);
+      }
+    }
+  </script>
+</body>
+</html>
